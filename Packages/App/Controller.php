@@ -8,10 +8,10 @@ abstract class Controller
     protected $response;
     function __construct($model)
     {
-        $this->response = Kernel::getResponse();
+        Kernel::implementComponents($this, 'Output');
         $this->model = $model;
     }
-    function reply($message, $code = Response::CODE_SUCCESS){
+    function reply($message, $code = Response\Component::CODE_SUCCESS){
         $this->response->reply($message, $code);
     }
 }

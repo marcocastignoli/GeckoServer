@@ -9,6 +9,7 @@ class Component extends App\Component
 {
     protected $db;
     public static $types = ['Model'];
+    protected static $instance;
 
     function __construct()
     {
@@ -33,8 +34,13 @@ class Component extends App\Component
 
 class DatabaseException extends \Exception
 {
+    function __construct($message, $code)
+    {
+        App\Kernel::implementComponents($this, 'Output');
+        parent::__construct($message, $code);
+    }
     public function __toString()
     {
-        return App\Kernel::getResponse()->reply("Errore nella richiesta al database", App\Response::CODE_WRONG_DATABASE_QUERY);
+        return $this->Response->reply("Errore nella richiesta al database");
     }
 }

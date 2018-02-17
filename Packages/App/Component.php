@@ -5,7 +5,6 @@ namespace App;
 abstract class Component
 {
     public static $types;
-    static $instance;
 
     function __construct()
     {
@@ -13,11 +12,11 @@ abstract class Component
     }
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
-            $called_class = get_called_class();
-            self::$instance = new $called_class();
+        $called_class = get_called_class();
+        if (!isset($called_class::$instance)) {
+            $called_class::$instance = new $called_class();
         }
-        return self::$instance;
+        return $called_class::$instance;
     }
     static function getTypes()
     {

@@ -13,7 +13,6 @@ class Kernel
     const PACKAGE_COMPONENT = 'Component';
 
     private static $components = [];
-    private static $response;
     private static $packages = [
         'App'
     ];
@@ -23,11 +22,10 @@ class Kernel
 
     function __construct()
     {
-        self::initResponse();
         self::initConfig();
-        //self::initDatabase();
         self::initPackages([
             'Agent',
+            'Response',
             'Database'
         ]);
         self::initComponents();
@@ -51,7 +49,7 @@ class Kernel
                         try {
                             self::$components[$componentType][$package] = $class::getInstance();
                         } catch (\Exception $e) {
-                            self::getResponse()->reply($e->getMessage(), $e->getCode());
+                            die(500);
                         }
                         
                     }
@@ -79,28 +77,9 @@ class Kernel
         self::$configuration = array_merge($config, self::$configuration);
     }
 
-    public static function initResponse($response = false)
-    {
-        if (!$response) {
-            self::includePackageFile("App", self::PACKAGE_RESPONSE);
-            $response = Response::getInstance();
-        }
-        self::$response = $response;
-    }
-
     public static function getConfig($config)
     {
         return self::$configuration[$config];
-    }
-
-    public static function getDatabase()
-    {
-        return self::$db;
-    }
-
-    public static function getResponse()
-    {
-        return self::$response;
     }
 
     public static function getPackages($excludeAbstracts = false)
@@ -150,6 +129,6 @@ class Kernel
                 }
             }
         }
-        self::getResponse()->reply("Questo percorso non esiste", Response::CODE_MISSING_ROUTE);
+        die(404);
     }
 }
