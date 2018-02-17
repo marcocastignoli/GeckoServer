@@ -10,8 +10,9 @@ class Kernel
     const PACKAGE_DATABASE = 'Database';
     const PACKAGE_CONFIG = 'Config';
     const PACKAGE_RESPONSE = 'Response';
+    const PACKAGE_COMPONENT = 'Component';
 
-    private static $db;
+    private static $components = [];
     private static $response;
     private static $packages = [
         'App'
@@ -24,10 +25,12 @@ class Kernel
     {
         self::initResponse();
         self::initConfig();
-        self::initDatabase();
+        //self::initDatabase();
         self::initPackages([
-            'Agent'
+            'Agent',
+            'Database'
         ]);
+        self::initComponents();
     }
 
     public static function initPackages($packages)
@@ -35,23 +38,40 @@ class Kernel
         self::$packages = array_merge(self::$packages, $packages);
     }
 
-    public static function initDatabase($database = false)
+    public static function initComponents()
     {
-        if (!$database) {
-            self::includePackageFile("App", self::PACKAGE_DATABASE);
-            try {
-                $database = Database::getInstance();
-            } catch (DatabaseException $e) {
-                self::getResponse()->reply('Errore nella configurazione del database', Response::CODE_WRONG_DATABASE_CONFIGURATION);
+        foreach (self::getPackages(true) as $package) {
+            if (self::includePackageFile($package, self::PACKAGE_COMPONENT)) {
+                $class = $package . '\\' . self::PACKAGE_COMPONENT;
+                if (is_array($class::$types) && method_exists($class, 'getInstance')) {
+                    foreach ($class::$types as $componentType) {
+                        if (!array_key_exists($componentType, self::$components)) {
+                            self::$components[$componentType] = [];
+                        }
+                        try {
+                            self::$components[$componentType][$package] = $class::getInstance();
+                        } catch (\Exception $e) {
+                            self::getResponse()->reply($e->getMessage(), $e->getCode());
+                        }
+                        
+                    }
+                }
             }
         }
-        self::$db = $database;
+    }
+
+    public static function implementComponents(&$instance, $componentType)
+    {
+        foreach (self::$components[$componentType] as $componentName => $componentInstance) {
+            $instance->$componentName = $componentInstance;
+        }
+        return true;
     }
 
     public static function initConfig()
     {
         $config = [];
-        foreach (self::$packages as $package) {
+        foreach (self::getPackages() as $package) {
             self::includePackageFile($package, self::PACKAGE_CONFIG);
             self::$configuration = array_merge($config, self::$configuration);
         }
@@ -83,10 +103,19 @@ class Kernel
         return self::$response;
     }
 
+    public static function getPackages($excludeAbstracts = false)
+    {
+        $packages = self::$packages;
+        if ($excludeAbstracts) {
+            $packages = array_diff(self::$packages, ['App']);
+        }
+        return $packages;
+    }
+
     public static function includePackageFile($package, $file)
     {
         $path = 'Packages/' . $package . '/' . $file . '.php';
-        if (in_array($package, self::$packages) && file_exists($path)) {
+        if (in_array($package, self::getPackages()) && file_exists($path)) {
             require_once $path;
             return $path;
         }

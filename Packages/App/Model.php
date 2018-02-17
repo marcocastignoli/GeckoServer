@@ -27,12 +27,11 @@ class ModelCollection
 
 abstract class Model
 {
-    protected $db;
     protected $properties;
 
     function __construct($properties = false)
     {
-        $this->db = Kernel::getDatabase();
+        Kernel::implementComponents($this, 'Model');
         $this->properties = $properties;
     }
 
