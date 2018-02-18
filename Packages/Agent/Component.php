@@ -5,7 +5,7 @@ use App;
 
 App\Kernel::includePackageFile("App", App\Kernel::PACKAGE_MODEL);
 
-class Model extends App\Model
+class Component extends App\Model
 {
     const table = "agents";
 

@@ -39,7 +39,14 @@ class Kernel
         foreach (self::getPackages(true) as $package) {
             if (self::includePackageFile($package, self::PACKAGE_COMPONENT)) {
                 $class = $package . '\\' . self::PACKAGE_COMPONENT;
-                foreach ($class::$types as $componentType) {
+                $types = [];
+                if (property_exists($class, 'types')) {
+                    $types = $class::$types;
+                }
+                if (!in_array($package, $types)) {
+                    $types = array_merge($types, [$package]);
+                }
+                foreach ($types as $componentType) {
                     if (!array_key_exists($componentType, self::$components)) {
                         self::$components[$componentType] = [];
                     }
@@ -51,15 +58,17 @@ class Kernel
 
     public static function implementComponents(&$instance, $componentType)
     {
-        foreach (self::$components[$componentType] as $componentName => $componentClass) {
-            if (!key_exists($componentClass, static::$componentsInstances)) {
-                try {
-                    static::$componentsInstances[$componentClass] = new $componentClass();
-                } catch (\Exception $e) {
-                    die(500);
+        if (array_key_exists($componentType, self::$components)) {
+            foreach (self::$components[$componentType] as $componentName => $componentClass) {
+                if (!key_exists($componentClass, static::$componentsInstances)) {
+                    try {
+                        static::$componentsInstances[$componentClass] = new $componentClass();
+                    } catch (\Exception $e) {
+                        die(500);
+                    }
                 }
+                $instance->$componentName = static::$componentsInstances[$componentClass];
             }
-            $instance->$componentName = static::$componentsInstances[$componentClass];
         }
         return true;
     }
