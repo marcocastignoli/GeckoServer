@@ -1,5 +1,5 @@
 <?php
-namespace Response;
+namespace JSON;
 
 use App;
 

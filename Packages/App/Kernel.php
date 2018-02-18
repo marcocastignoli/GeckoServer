@@ -7,9 +7,7 @@ class Kernel
 {
     const PACKAGE_CONTROLLER = 'Controller';
     const PACKAGE_MODEL = 'Model';
-    const PACKAGE_DATABASE = 'Database';
     const PACKAGE_CONFIG = 'Config';
-    const PACKAGE_RESPONSE = 'Response';
     const PACKAGE_COMPONENT = 'Component';
 
     private static $components = [];
@@ -25,7 +23,7 @@ class Kernel
         self::initConfig();
         self::initPackages([
             'Agent',
-            'Response',
+            'JSON',
             'Database'
         ]);
         self::initComponents();

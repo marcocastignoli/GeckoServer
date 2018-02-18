@@ -15,15 +15,15 @@ class Controller extends App\Controller
     function list()
     {
         $agents = $this->model->get();
-        $this->Response->reply($agents->getProperties());
+        $this->JSON->reply($agents->getProperties());
     }
     function create($request)
     {
         if (isset($request['name'])) {
             $agents = $this->model->create($request['name']);
-            $this->Response->reply($agents);
+            $this->JSON->reply($agents);
         } else {
-            $this->Response->reply('Parametro name mancante', $this->Response::CODE_MISSING_PARAMETER);
+            $this->JSON->reply('Parametro name mancante', $this->JSON::CODE_MISSING_PARAMETER);
         }
     }
 }

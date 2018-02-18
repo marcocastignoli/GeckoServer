@@ -41,6 +41,6 @@ class DatabaseException extends \Exception
     }
     public function __toString()
     {
-        return $this->Response->reply("Errore nella richiesta al database");
+        return $this->JSON->reply("Errore nella richiesta al database");
     }
 }
