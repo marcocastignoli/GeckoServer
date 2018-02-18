@@ -11,14 +11,14 @@ class Model extends App\Model
 
     public function get()
     {
-        $data = $this->Database->query('SELECT * FROM ' . self::table);
+        $data = $this->PDO->query('SELECT * FROM ' . self::table);
         $agents = new App\ModelCollection($this, $data);
         return $agents;
     }
 
     public function create($name)
     {
-        return $this->Database->query('INSERT INTO ' . self::table . ' (name) VALUES (:name)', [
+        return $this->PDO->query('INSERT INTO ' . self::table . ' (name) VALUES (:name)', [
             'name' => $name
         ]);
     }

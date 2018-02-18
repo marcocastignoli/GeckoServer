@@ -1,7 +1,7 @@
 <?php
 namespace App;
 
-use App\DatabaseException;
+use App\PDOException;
 
 class Kernel
 {
@@ -24,7 +24,7 @@ class Kernel
         self::initPackages([
             'Agent',
             'JSON',
-            'Database'
+            'PDO'
         ]);
         self::initComponents();
     }

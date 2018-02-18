@@ -1,5 +1,5 @@
 <?php
-namespace Database;
+namespace PDO;
 
 use App;
 
@@ -8,7 +8,7 @@ App\Kernel::includePackageFile("App", App\Kernel::PACKAGE_COMPONENT);
 class Component extends App\Component
 {
     protected $db;
-    public static $types = ['Model'];
+    public static $types = ['Database', 'Model'];
     protected static $instance;
 
     function __construct()
@@ -26,13 +26,13 @@ class Component extends App\Component
         $query->execute($parameters);
         $error = $query->errorInfo();
         if ($error[0] !== "00000") {
-            throw new DatabaseException($error[2], $error[0]);
+            throw new PDOException($error[2], $error[0]);
         }
         return $query->fetchAll(\PDO::FETCH_ASSOC);
     }
 }
 
-class DatabaseException extends \Exception
+class PDOException extends \Exception
 {
     function __construct($message, $code)
     {
