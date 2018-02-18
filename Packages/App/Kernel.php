@@ -23,7 +23,6 @@ class Kernel
     {
         self::initConfig();
         self::initPackages([
-            'Agent',
             'JSON',
             'PDO'
         ]);
