@@ -46,19 +46,21 @@ class Kernel
     public static function initComponents()
     {
         foreach (self::getPackages(true) as $package) {
-            $class = $package . '\\' . self::PACKAGE_COMPONENT;
-            $types = [];
-            if (property_exists($class, 'types')) {
-                $types = $class::$types;
-            }
-            if (!in_array($package, $types)) {
-                $types = array_merge($types, [$package]);
-            }
-            foreach ($types as $componentType) {
-                if (!array_key_exists($componentType, self::$components)) {
-                    self::$components[$componentType] = [];
+            if (self::includePackageFile($package, self::PACKAGE_COMPONENT)) {
+                $class = $package . '\\' . self::PACKAGE_COMPONENT;
+                $types = [];
+                if (property_exists($class, 'types')) {
+                    $types = $class::$types;
                 }
-                self::$components[$componentType][$package] = $class;
+                if (!in_array($package, $types)) {
+                    $types = array_merge($types, [$package]);
+                }
+                foreach ($types as $componentType) {
+                    if (!array_key_exists($componentType, self::$components)) {
+                        self::$components[$componentType] = [];
+                    }
+                    self::$components[$componentType][$package] = $class;
+                }
             }
         }
     }
