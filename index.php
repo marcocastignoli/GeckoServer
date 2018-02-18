@@ -9,8 +9,12 @@ App\Kernel::initPackages([
 $kernel = new App\Kernel();
 
 $kernel->addRoute('GET', 'agent/list', 'Agent', 'list' , function($request){
-    $authentication = new Authentication\Middleware();
-    return $authentication->checkToken($request);
+    if(@$token = $request->get('token')){
+        return $request->Authentication->checkToken($token);
+    } else {
+        echo "Need token";
+        return false;
+    }
 });
 $kernel->addRoute('POST', 'agent/create', 'Agent', 'create');
 

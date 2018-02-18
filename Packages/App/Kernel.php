@@ -131,13 +131,13 @@ class Kernel
                 $class = $package . '\\' . self::PACKAGE_CONTROLLER;
                 if (method_exists($class, $action)) {
                     $controllerInstance = new $class();
-                    $arguments = $_REQUEST;
+                    $request = new Request($_REQUEST);
                     $next = true;
                     if (is_callable($middleware)) {
-                        $next = $middleware($arguments);
+                        $next = $middleware($request);
                     }
                     if ($next) {
-                        return $controllerInstance->$action($arguments);
+                        return $controllerInstance->$action($request);
                     } else {
                         return false;
                     }

@@ -3,14 +3,16 @@ namespace Authentication;
 
 use App;
 
-class Middleware
+class Component
 {
+    public static $types = ['Request'];
+
     function __construct(){
         App\Kernel::implementComponents($this, 'Output');
     }
-    public function checkToken($request)
+    public function checkToken($token)
     {
-        if(@$request['token'] === "qwerty"){
+        if($token === "qwerty"){
             return true;
         } else {
             $this->JSON->reply("Not authorized");
