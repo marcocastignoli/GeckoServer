@@ -23,7 +23,7 @@ class Controller extends App\Controller
             $agents = $this->model->create($request['name']);
             $this->Response->reply($agents);
         } else {
-            $this->Response->reply('Parametro name mancante', App\Response::CODE_MISSING_PARAMETER);
+            $this->Response->reply('Parametro name mancante', $this->Response::CODE_MISSING_PARAMETER);
         }
     }
 }

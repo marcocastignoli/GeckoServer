@@ -11,7 +11,4 @@ abstract class Controller
         Kernel::implementComponents($this, 'Output');
         $this->model = $model;
     }
-    function reply($message, $code = Response\Component::CODE_SUCCESS){
-        $this->response->reply($message, $code);
-    }
 }
