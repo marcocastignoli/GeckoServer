@@ -3,8 +3,6 @@ namespace Agent;
 
 use App;
 
-App\Kernel::includePackageFile("App", App\Kernel::PACKAGE_MODEL);
-
 class Component extends App\Model
 {
     const table = "agents";

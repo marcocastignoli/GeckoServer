@@ -3,8 +3,6 @@ namespace Agent;
 
 use App;
 
-App\Kernel::includePackageFile("App", App\Kernel::PACKAGE_CONTROLLER);
-
 class Controller extends App\Controller
 {
     function list()

@@ -21,6 +21,15 @@ class Kernel
 
     function __construct()
     {
+        spl_autoload_register(function ($className) {
+            $path = explode('\\', $className);
+            $package = $path[0];
+            unset($path[0]);
+            $file = implode('\\', $path);
+            if (!self::includePackageFile($package, $file)) {
+                throw new \Exception("Class doesn't exists");
+            }
+        });
         self::initConfig();
         self::initPackages([
             'JSON',
@@ -37,21 +46,19 @@ class Kernel
     public static function initComponents()
     {
         foreach (self::getPackages(true) as $package) {
-            if (self::includePackageFile($package, self::PACKAGE_COMPONENT)) {
-                $class = $package . '\\' . self::PACKAGE_COMPONENT;
-                $types = [];
-                if (property_exists($class, 'types')) {
-                    $types = $class::$types;
+            $class = $package . '\\' . self::PACKAGE_COMPONENT;
+            $types = [];
+            if (property_exists($class, 'types')) {
+                $types = $class::$types;
+            }
+            if (!in_array($package, $types)) {
+                $types = array_merge($types, [$package]);
+            }
+            foreach ($types as $componentType) {
+                if (!array_key_exists($componentType, self::$components)) {
+                    self::$components[$componentType] = [];
                 }
-                if (!in_array($package, $types)) {
-                    $types = array_merge($types, [$package]);
-                }
-                foreach ($types as $componentType) {
-                    if (!array_key_exists($componentType, self::$components)) {
-                        self::$components[$componentType] = [];
-                    }
-                    self::$components[$componentType][$package] = $class;
-                }
+                self::$components[$componentType][$package] = $class;
             }
         }
     }
@@ -77,8 +84,9 @@ class Kernel
     {
         $config = [];
         foreach (self::getPackages() as $package) {
-            self::includePackageFile($package, self::PACKAGE_CONFIG);
-            self::$configuration = array_merge($config, self::$configuration);
+            if (self::includePackageFile($package, self::PACKAGE_CONFIG)) {
+                self::$configuration = array_merge($config, self::$configuration);
+            }
         }
         include self::PACKAGE_CONFIG . '.php';
         self::$configuration = array_merge($config, self::$configuration);
@@ -118,20 +126,18 @@ class Kernel
         if (array_key_exists($_SERVER['REQUEST_METHOD'], $this->routes)) {
             if (array_key_exists(@$_REQUEST['route'], $this->routes[$_SERVER['REQUEST_METHOD']])) {
                 list($package, $action, $middleware) = $this->routes[$_SERVER['REQUEST_METHOD']][$_REQUEST['route']];
-                if ($this->includePackageFile($package, self::PACKAGE_CONTROLLER)) {
-                    $class = $package . '\\' . self::PACKAGE_CONTROLLER;
-                    if (method_exists($class, $action)) {
-                        $controllerInstance = new $class();
-                        $arguments = $_REQUEST;
-                        $next = true;
-                        if (is_callable($middleware)) {
-                            $next = $middleware($arguments);
-                        }
-                        if ($next) {
-                            return $controllerInstance->$action($arguments);
-                        } else {
-                            return false;
-                        }
+                $class = $package . '\\' . self::PACKAGE_CONTROLLER;
+                if (method_exists($class, $action)) {
+                    $controllerInstance = new $class();
+                    $arguments = $_REQUEST;
+                    $next = true;
+                    if (is_callable($middleware)) {
+                        $next = $middleware($arguments);
+                    }
+                    if ($next) {
+                        return $controllerInstance->$action($arguments);
+                    } else {
+                        return false;
                     }
                 }
             }
