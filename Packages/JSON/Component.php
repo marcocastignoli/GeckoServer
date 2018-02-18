@@ -3,12 +3,9 @@ namespace JSON;
 
 use App;
 
-App\Kernel::includePackageFile("App", App\Kernel::PACKAGE_COMPONENT);
-
-class Component extends App\Component
+class Component
 {
     public static $types = ['Output'];
-    protected static $instance;
     
     const CODE_SUCCESS = 0;
     const CODE_MISSING_ROUTE = 1;

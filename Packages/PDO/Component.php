@@ -3,13 +3,10 @@ namespace PDO;
 
 use App;
 
-App\Kernel::includePackageFile("App", App\Kernel::PACKAGE_COMPONENT);
-
-class Component extends App\Component
+class Component
 {
     protected $db;
     public static $types = ['Database', 'Model'];
-    protected static $instance;
 
     function __construct()
     {
@@ -18,7 +15,6 @@ class Component extends App\Component
         } catch (\Exception $e) {
             throw new \Exception("Errore configurazione database", 4);
         }
-        parent::__construct();
     }
     function query($query, $parameters = array())
     {

@@ -2,29 +2,6 @@
 
 namespace App;
 
-class ModelCollection
-{
-    protected $collection;
-
-    function __construct($model, $data)
-    {
-        $this->collection = [];
-        foreach ($data as $properties) {
-            $this->collection[] = new $model($properties);
-        }
-        return $this;
-    }
-
-    public function getProperties()
-    {
-        $properties = [];
-        foreach ($this->collection as $model) {
-            $properties[] = $model->getProperties();
-        }
-        return $properties;
-    }
-}
-
 abstract class Model
 {
     protected $properties;

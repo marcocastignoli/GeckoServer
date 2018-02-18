@@ -11,8 +11,7 @@ class Model extends App\Model
 
     public function get()
     {
-        $data = $this->PDO->query('SELECT * FROM ' . self::table);
-        $agents = new App\ModelCollection($this, $data);
+        $agents = $this->PDO->query('SELECT * FROM ' . self::table);
         return $agents;
     }
 

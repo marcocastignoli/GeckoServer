@@ -11,6 +11,7 @@ class Kernel
     const PACKAGE_COMPONENT = 'Component';
 
     private static $components = [];
+    private static $componentsInstances = [];
     private static $packages = [
         'App'
     ];
@@ -39,18 +40,11 @@ class Kernel
         foreach (self::getPackages(true) as $package) {
             if (self::includePackageFile($package, self::PACKAGE_COMPONENT)) {
                 $class = $package . '\\' . self::PACKAGE_COMPONENT;
-                if (is_array($class::$types) && method_exists($class, 'getInstance')) {
-                    foreach ($class::$types as $componentType) {
-                        if (!array_key_exists($componentType, self::$components)) {
-                            self::$components[$componentType] = [];
-                        }
-                        try {
-                            self::$components[$componentType][$package] = $class::getInstance();
-                        } catch (\Exception $e) {
-                            die(500);
-                        }
-                        
+                foreach ($class::$types as $componentType) {
+                    if (!array_key_exists($componentType, self::$components)) {
+                        self::$components[$componentType] = [];
                     }
+                    self::$components[$componentType][$package] = $class;
                 }
             }
         }
@@ -58,8 +52,15 @@ class Kernel
 
     public static function implementComponents(&$instance, $componentType)
     {
-        foreach (self::$components[$componentType] as $componentName => $componentInstance) {
-            $instance->$componentName = $componentInstance;
+        foreach (self::$components[$componentType] as $componentName => $componentClass) {
+            if (!key_exists($componentClass, static::$componentsInstances)) {
+                try {
+                    static::$componentsInstances[$componentClass] = new $componentClass();
+                } catch (\Exception $e) {
+                    die(500);
+                }
+            }
+            $instance->$componentName = static::$componentsInstances[$componentClass];
         }
         return true;
     }

@@ -15,7 +15,7 @@ class Controller extends App\Controller
     function list()
     {
         $agents = $this->model->get();
-        $this->JSON->reply($agents->getProperties());
+        $this->JSON->reply($agents);
     }
     function create($request)
     {
