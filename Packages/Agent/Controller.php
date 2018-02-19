@@ -5,8 +5,9 @@ use App;
 
 class Controller extends App\Controller
 {
-    function list()
+    function list($request)
     {
+        $user = $request->Authentication->user();
         $agents = $this->Agent->get();
         $this->JSON->reply($agents);
     }

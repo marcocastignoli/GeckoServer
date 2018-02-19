@@ -9,6 +9,6 @@ class Request
         Kernel::implementComponents($this, 'Request');
     }
     public function get($parameter){
-        return $_REQUEST[$parameter];
+        return @$_REQUEST[$parameter];
     }
 }
