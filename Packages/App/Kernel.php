@@ -99,10 +99,10 @@ class Kernel
         return self::$configuration[$config];
     }
 
-    public static function getPackages($excludeAbstracts = false)
+    public static function getPackages($excludeApp = false)
     {
         $packages = self::$packages;
-        if ($excludeAbstracts) {
+        if ($excludeApp) {
             $packages = array_diff(self::$packages, ['App']);
         }
         return $packages;
