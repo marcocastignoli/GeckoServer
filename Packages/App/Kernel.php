@@ -9,13 +9,13 @@ class Kernel
     const PACKAGE_MODEL = 'Model';
     const PACKAGE_CONFIG = 'Config';
     const PACKAGE_COMPONENT = 'Component';
+    const PACKAGE_ROUTES = 'Routes';
 
     private static $components = [];
     private static $componentsInstances = [];
     private static $packages = [];
     private static $configuration = [];
-
-    private $routes;
+    private static $routes;
 
     function __construct()
     {
@@ -120,14 +120,19 @@ class Kernel
 
     public function addRoute($method, $route, $controller, $action, $middleware = false)
     {
-        $this->routes[$method][$route] = [$controller, $action, $middleware];
+        self::$routes[$method][$route] = [$controller, $action, $middleware];
+    }
+
+    public function loadPackageRoutes($package)
+    {
+        return self::includePackageFile($package, self::PACKAGE_ROUTES);
     }
 
     public function serve()
     {
-        if (array_key_exists($_SERVER['REQUEST_METHOD'], $this->routes)) {
-            if (array_key_exists(@$_REQUEST['route'], $this->routes[$_SERVER['REQUEST_METHOD']])) {
-                list($package, $action, $middleware) = $this->routes[$_SERVER['REQUEST_METHOD']][$_REQUEST['route']];
+        if (array_key_exists($_SERVER['REQUEST_METHOD'], self::$routes)) {
+            if (array_key_exists(@$_REQUEST['route'], self::$routes[$_SERVER['REQUEST_METHOD']])) {
+                list($package, $action, $middleware) = self::$routes[$_SERVER['REQUEST_METHOD']][$_REQUEST['route']];
                 $class = $package . '\\' . self::PACKAGE_CONTROLLER;
                 if (method_exists($class, $action)) {
                     $controllerInstance = new $class();

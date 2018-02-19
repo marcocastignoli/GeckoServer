@@ -1,17 +1,19 @@
 <?php
 include 'Gecko.php';
 
+/* App\Kernel::initPackages([
+    'VirtualBoot'
+]); */
+
 App\Kernel::initPackages([
     'Authentication',
     'Agent'
 ]);
 
 $kernel = new App\Kernel();
+/* $kernel->VirtualBoot->boot(); */
 
-$kernel->addRoute('GET', 'agent/list', 'Agent', 'list' , function($request){
-    return $request->Authentication->checkToken(@$request->get('token'));
-});
-$kernel->addRoute('POST', 'agent/create', 'Agent', 'create');
-$kernel->addRoute('GET', 'user/login', 'Authentication', 'login');
+App\Kernel::loadPackageRoutes('Authentication');
+App\Kernel::loadPackageRoutes('Agent');
 
 $kernel->serve();
