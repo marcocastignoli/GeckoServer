@@ -12,9 +12,7 @@ class Kernel
 
     private static $components = [];
     private static $componentsInstances = [];
-    private static $packages = [
-        'App'
-    ];
+    private static $packages = [];
     private static $configuration = [];
 
     private $routes;
@@ -32,10 +30,12 @@ class Kernel
         });
         self::initConfig();
         self::initPackages([
+            'App',
             'JSON',
             'PDO'
         ]);
         self::initComponents();
+        self::implementComponents($this, 'Kernel');
     }
 
     public static function initPackages($packages)
@@ -71,7 +71,7 @@ class Kernel
             foreach (self::$components[$componentType] as $componentName => $componentClass) {
                 if (!key_exists($componentClass, static::$componentsInstances)) {
                     try {
-                        static::$componentsInstances[$componentClass] = new $componentClass();
+                        static::$componentsInstances[$componentClass] = new $componentClass($instance);
                     } catch (\Exception $e) {
                         die(500);
                     }
