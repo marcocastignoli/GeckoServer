@@ -71,7 +71,7 @@ class Kernel
             foreach (self::$components[$componentType] as $componentName => $componentClass) {
                 if (!key_exists($componentClass, static::$componentsInstances)) {
                     try {
-                        static::$componentsInstances[$componentClass] = new $componentClass($instance);
+                        static::$componentsInstances[$componentClass] = new $componentClass();
                     } catch (\Exception $e) {
                         die(500);
                     }
