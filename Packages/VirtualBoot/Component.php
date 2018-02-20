@@ -67,10 +67,12 @@ class Component extends App\Model
     }
     public function install($package)
     {
-        $this->insert([
-            'name' => $package
-        ]);
-        $this->callGeckoAction($package, 'install');
+        if(App\Kernel::packageExists($package)){
+            $this->insert([
+                'name' => $package
+            ]);
+            $this->callGeckoAction($package, 'install');
+        }
     }
     public function uninstall($package)
     {

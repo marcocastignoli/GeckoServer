@@ -109,6 +109,12 @@ class Kernel
         return $packages;
     }
 
+    public static function packageExists($package)
+    {
+        $path = 'Packages/' . $package . '/';
+        return is_dir($path);
+    }
+
     public static function includePackageFile($package, $file)
     {
         $path = 'Packages/' . $package . '/' . $file . '.php';
