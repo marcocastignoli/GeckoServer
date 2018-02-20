@@ -10,6 +10,7 @@ class Kernel
     const PACKAGE_CONFIG = 'Config';
     const PACKAGE_COMPONENT = 'Component';
     const PACKAGE_ROUTES = 'Routes';
+    const PACKAGE_MIDDLEWARE = 'Middleware';
 
     private static $components = [];
     private static $componentsInstances = [];
@@ -120,7 +121,18 @@ class Kernel
 
     public function addRoute($method, $route, $controller, $action, $middleware = false)
     {
-        self::$routes[$method][$route] = [$controller, $action, $middleware];
+        $middlewareBefore = false;
+        $middlewareAfter = false;
+        if (is_string($middleware) && self::includePackageFile($middleware, self::PACKAGE_MIDDLEWARE)) {
+            $class = $middleware . '\\' . self::PACKAGE_MIDDLEWARE;
+            if (method_exists($class, "before")) {
+                $middlewareBefore = $class::before();
+            }
+            if (method_exists($class, "after")) {
+                $middlewareAfter = $class::after();
+            }
+        }
+        self::$routes[$method][$route] = [$controller, $action, $middlewareBefore, $middlewareAfter];
     }
 
     public function loadPackageRoutes($package)
@@ -132,17 +144,21 @@ class Kernel
     {
         if (array_key_exists($_SERVER['REQUEST_METHOD'], self::$routes)) {
             if (array_key_exists(@$_REQUEST['route'], self::$routes[$_SERVER['REQUEST_METHOD']])) {
-                list($package, $action, $middleware) = self::$routes[$_SERVER['REQUEST_METHOD']][$_REQUEST['route']];
+                list($package, $action, $middlewareBefore, $middlewareAfter) = self::$routes[$_SERVER['REQUEST_METHOD']][$_REQUEST['route']];
                 $class = $package . '\\' . self::PACKAGE_CONTROLLER;
                 if (method_exists($class, $action)) {
                     $controllerInstance = new $class();
                     $request = new Request($_REQUEST);
                     $next = true;
-                    if (is_callable($middleware)) {
-                        $next = $middleware($request);
+                    if (is_callable($middlewareBefore)) {
+                        $next = $middlewareBefore($request);
                     }
                     if ($next) {
-                        return $controllerInstance->$action($request);
+                        $next = $controllerInstance->$action($request);
+                        if (is_callable($middlewareAfter)) {
+                            $middlewareAfter($request, $next);
+                        }
+                        die();
                     } else {
                         return false;
                     }

@@ -28,7 +28,7 @@ class Component extends App\Model
             return true;
         } catch (\Exception $e) {
             $this->JSON->reply("Not authorized");
-            return false;
+            die();
         }
     }
     public function getToken($username, $password)

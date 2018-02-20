@@ -17,6 +17,5 @@ class Component
     {
         header('Content-Type: application/json');
         echo json_encode(['code' => $code, 'data' => $message]);
-        die();
     }
 }
