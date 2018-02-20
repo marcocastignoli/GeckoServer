@@ -141,7 +141,7 @@ class Kernel
         self::$routes[$method][$route] = [$controller, $action, $middlewareBefore, $middlewareAfter];
     }
 
-    public function loadPackageRoutes($package)
+    public function loadPackageRoutes($package, $middleware = false)
     {
         return self::includePackageFile($package, self::PACKAGE_ROUTES);
     }
