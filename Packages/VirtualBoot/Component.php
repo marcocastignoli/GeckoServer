@@ -24,7 +24,7 @@ class Component extends App\Model
     {
         if (is_array($packages) && count($packages) > 0) {
             $qMarks = str_repeat('?,', count($packages) - 1) . '?';
-            return $this->PDO->query("
+            return $this->Database->query("
             SELECT 
                 method,
                 route,
@@ -51,7 +51,7 @@ class Component extends App\Model
                         if(!isset($route[App\Kernel::ROUTES_MIDDLEWARE])){
                             $route[App\Kernel::ROUTES_MIDDLEWARE] = null;
                         }
-                        $this->PDO->query("INSERT INTO routes (package_id, method, route, controller, action, middleware) VALUES ((SELECT package_id FROM packages WHERE name = :package), :method, :route, :controller, :action, :middleware)", [
+                        $this->Database->query("INSERT INTO routes (package_id, method, route, controller, action, middleware) VALUES ((SELECT package_id FROM packages WHERE name = :package), :method, :route, :controller, :action, :middleware)", [
                             "package" => $package,
                             "method" => $route[App\Kernel::ROUTES_METHOD],
                             "route" => $route[App\Kernel::ROUTES_ROUTE],
@@ -67,15 +67,15 @@ class Component extends App\Model
     }
     private function insert($values)
     {
-        return $this->PDO->query("INSERT INTO packages (name) VALUES (:name)", $values);
+        return $this->Database->query("INSERT INTO packages (name) VALUES (:name)", $values);
     }
     private function delete($values)
     {
-        return $this->PDO->query("DELETE FROM packages WHERE name = (:name)", $values);
+        return $this->Database->query("DELETE FROM packages WHERE name = (:name)", $values);
     }
     private function isActive($package)
     {
-        $res = $this->PDO->query("SELECT active FROM packages WHERE name = :name", [
+        $res = $this->Database->query("SELECT active FROM packages WHERE name = :name", [
             'name' => $package
         ]);
         if (count($res) > 0) {
@@ -85,7 +85,7 @@ class Component extends App\Model
     private function setActive($package, $active)
     {
         if ($this->isActive($package) !== $active) {
-            return $this->PDO->query("UPDATE packages SET active = :active WHERE name = (:name)", [
+            return $this->Database->query("UPDATE packages SET active = :active WHERE name = (:name)", [
                 'active' => $active,
                 'name' => $package
             ]);
@@ -94,7 +94,7 @@ class Component extends App\Model
     }
     public function getActivePackages()
     {
-        $res = $this->PDO->query("SELECT name FROM packages WHERE active = 1");
+        $res = $this->Database->query("SELECT name FROM packages WHERE active = 1");
         if (count($res) > 0) {
             return array_column($res, 'name');
         }

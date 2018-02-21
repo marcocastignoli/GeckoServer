@@ -5,7 +5,7 @@ App\Kernel::initPackages([
     'VirtualBoot'
 ]);
 $kernel = new App\Kernel();
-$kernel->VirtualBoot->boot();
+$kernel->Kernel->__use('VirtualBoot')->boot();
 App\Kernel::loadPackageRoutes('Authentication');
 App\Kernel::loadPackageRoutes('VirtualBoot', 'Authentication');
 $kernel->serve();
