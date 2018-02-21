@@ -16,8 +16,10 @@ class Component extends App\Model
         App\Kernel::initPackages($packages);
         App\Kernel::initComponents();
         $routes = $this->getRoutes($packages);
-        foreach ($routes as $route) {
-            App\Kernel::addRoute($route['method'], $route['route'], $route['controller'], $route['action'], $route['middleware']);
+        if($routes){
+            foreach ($routes as $route) {
+                App\Kernel::addRoute($route['method'], $route['route'], $route['controller'], $route['action'], $route['middleware']);
+            }
         }
     }
     public function getRoutes($packages)
