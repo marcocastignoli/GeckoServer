@@ -1,11 +1,18 @@
 <?php
 include 'Gecko.php';
 
-App\Kernel::initPackages([
+/* App\Kernel::initPackages([
     'VirtualBoot'
+]); */
+
+App\Kernel::initPackages([
+    'Authentication',
+    'Agent'
 ]);
 
 $kernel = new App\Kernel();
-$kernel->VirtualBoot->boot();
-App\Kernel::loadPackageRoutes('VirtualBoot');
+/* $kernel->VirtualBoot->boot();
+App\Kernel::loadPackageRoutes('VirtualBoot'); */
+App\Kernel::loadPackageRoutes('Authentication');
+App\Kernel::loadPackageRoutes('Agent');
 $kernel->serve();

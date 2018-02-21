@@ -12,6 +12,12 @@ class Kernel
     const PACKAGE_ROUTES = 'Routes';
     const PACKAGE_MIDDLEWARE = 'Middleware';
 
+    const ROUTES_METHOD = 0;
+    const ROUTES_ROUTE = 1;
+    const ROUTES_CONTROLLER = 2;
+    const ROUTES_ACTION = 3;
+    const ROUTES_MIDDLEWARE = 4;
+
     private static $components = [];
     private static $componentsInstances = [];
     private static $packages = [];
@@ -125,7 +131,7 @@ class Kernel
         return false;
     }
 
-    public function addRoute($method, $route, $controller, $action, $middleware = false)
+    public static function addRoute($method, $route, $controller, $action, $middleware = false)
     {
         $middlewareBefore = false;
         $middlewareAfter = false;
@@ -141,9 +147,19 @@ class Kernel
         self::$routes[$method][$route] = [$controller, $action, $middlewareBefore, $middlewareAfter];
     }
 
-    public function loadPackageRoutes($package, $middleware = false)
+    public function loadPackageRoutes($package, $middleware = false, $group = 'default')
     {
-        return self::includePackageFile($package, self::PACKAGE_ROUTES);
+        if (self::includePackageFile($package, self::PACKAGE_ROUTES)) {
+            $class = $package . '\\' . self::PACKAGE_ROUTES;
+            if (method_exists($class, $group)) {
+                $routesGroup = $class::$group($middleware);
+                if(is_array($routesGroup)){
+                    foreach($routesGroup as $route){
+                        self::addRoute($route[self::ROUTES_METHOD], $route[self::ROUTES_ROUTE], $route[self::ROUTES_CONTROLLER], $route[self::ROUTES_ACTION], @$route[self::ROUTES_MIDDLEWARE]);
+                    }
+                }
+            }
+        }
     }
 
     public function serve()

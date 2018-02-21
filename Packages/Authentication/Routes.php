@@ -1,3 +1,13 @@
 <?php
 
-App\Kernel::addRoute('GET', 'user/login', 'Authentication', 'login');
+namespace Authentication;
+
+class Routes
+{
+    public static function default($middleware)
+    {   
+        return [
+            ['GET', 'user/login', 'Authentication', 'login']
+        ];
+    }
+}

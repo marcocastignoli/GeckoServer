@@ -1,7 +1,15 @@
 <?php
-global $middleware;
 
-$middleware = $middleware ? $middleware : 'Authentication';
+namespace Agent;
 
-App\Kernel::addRoute('GET', 'agent/list', 'Agent', 'list', $middleware);
-App\Kernel::addRoute('POST', 'agent/create', 'Agent', 'create', $middleware);
+class Routes
+{
+    public static function default($middleware)
+    {   
+        $middleware = $middleware ? $middleware : 'Authentication';
+        return [
+            ['GET', 'agent/list', 'Agent', 'list', $middleware],
+            ['POST', 'agent/create', 'Agent', 'create', $middleware]
+        ];
+    }
+}
