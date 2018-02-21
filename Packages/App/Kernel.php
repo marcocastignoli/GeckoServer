@@ -84,7 +84,7 @@ class Kernel
                         die(500);
                     }
                 }
-                $instance->$componentType->addComponent($componentName, static::$componentsInstances[$componentClass]);
+                $instance->$componentType->__addComponent($componentName, static::$componentsInstances[$componentClass]);
             }
         }
         return true;

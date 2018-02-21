@@ -6,12 +6,12 @@ class ComponentInterface
 {
     protected $components;
 
-    public function addComponent($name, $instance)
+    public function __addComponent($name, $instance)
     {
         $this->components[$name] = $instance;
     }
 
-    public function use($name = false)
+    public function __use($name = false)
     {
         $components = $this->components;
         $component = null;
@@ -25,7 +25,7 @@ class ComponentInterface
 
     public function __call($methodName, $arguments)
     {
-        $component = $this->use();
+        $component = $this->__use();
         return call_user_func_array([$component, $methodName], $arguments);
     }
 }
