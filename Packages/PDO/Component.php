@@ -6,7 +6,7 @@ use App;
 class Component
 {
     protected $db;
-    public static $types = ['Database', 'Model'];
+    public static $types = ['Database'];
 
     function __construct()
     {
@@ -15,6 +15,7 @@ class Component
         } catch (\Exception $e) {
             throw new \Exception("Errore configurazione database", 4);
         }
+        App\Kernel::implementComponents($this, 'Output');
     }
     function query($query, $parameters = array())
     {
@@ -37,6 +38,6 @@ class PDOException extends \Exception
     }
     public function __toString()
     {
-        return $this->JSON->reply("Errore nella richiesta al database");
+        return $this->Output->reply("Errore nella richiesta al database");
     }
 }

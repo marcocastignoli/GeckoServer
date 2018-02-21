@@ -9,6 +9,7 @@ abstract class Model
     function __construct($properties = false)
     {
         Kernel::implementComponents($this, 'Model');
+        Kernel::implementComponents($this, 'Database');
         $this->properties = $properties;
     }
 

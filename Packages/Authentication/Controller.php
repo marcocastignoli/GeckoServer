@@ -10,6 +10,6 @@ class Controller extends App\Controller
         $username = $request->get('username');
         $password = $request->get('password');
         $jwt = $this->Authentication->getToken($username, $password);
-        $this->JSON->reply($jwt);
+        $this->Output->reply($jwt);
     }
 }

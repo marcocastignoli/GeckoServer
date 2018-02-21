@@ -75,6 +75,7 @@ class Kernel
     public static function implementComponents(&$instance, $componentType)
     {
         if (array_key_exists($componentType, self::$components)) {
+            $instance->$componentType = new ComponentInterface();
             foreach (self::$components[$componentType] as $componentName => $componentClass) {
                 if (!key_exists($componentClass, static::$componentsInstances)) {
                     try {
@@ -83,7 +84,7 @@ class Kernel
                         die(500);
                     }
                 }
-                $instance->$componentName = static::$componentsInstances[$componentClass];
+                $instance->$componentType->addComponent($componentName, static::$componentsInstances[$componentClass]);
             }
         }
         return true;

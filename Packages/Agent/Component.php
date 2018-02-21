@@ -9,13 +9,13 @@ class Component extends App\Model
 
     public function get()
     {
-        $agents = $this->PDO->query('SELECT * FROM ' . self::table);
+        $agents = $this->Database->query('SELECT * FROM ' . self::table);
         return $agents;
     }
 
     public function create($name)
     {
-        return $this->PDO->query('INSERT INTO ' . self::table . ' (name) VALUES (:name)', [
+        return $this->Database->query('INSERT INTO ' . self::table . ' (name) VALUES (:name)', [
             'name' => $name
         ]);
     }

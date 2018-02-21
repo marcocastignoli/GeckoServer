@@ -27,13 +27,13 @@ class Component extends App\Model
             self::$user = $decoded->usr;
             return true;
         } catch (\Exception $e) {
-            $this->JSON->reply("Not authorized");
+            $this->Output->reply("Not authorized");
             die();
         }
     }
     public function getToken($username, $password)
     {
-        $res = $this->PDO->query("SELECT user_id FROM users WHERE username = :username AND password = :password", [
+        $res = $this->Database->query("SELECT user_id FROM users WHERE username = :username AND password = :password", [
             "username" => $username,
             "password" => $password
         ]);
