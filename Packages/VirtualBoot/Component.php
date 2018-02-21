@@ -15,8 +15,29 @@ class Component extends App\Model
         $packages = $this->getActivePackages();
         App\Kernel::initPackages($packages);
         App\Kernel::initComponents();
-        foreach ($packages as $package) {
-            App\Kernel::loadPackageRoutes($package);
+        $routes = $this->getRoutes($packages);
+        foreach ($routes as $route) {
+            App\Kernel::addRoute($route['method'], $route['route'], $route['controller'], $route['action'], $route['middleware']);
+        }
+    }
+    public function getRoutes($packages)
+    {
+        if (is_array($packages) && count($packages) > 0) {
+            $qMarks = str_repeat('?,', count($packages) - 1) . '?';
+            return $this->PDO->query("
+            SELECT 
+                method,
+                route,
+                controller,
+                action,
+                middleware
+            FROM 
+                routes AS r
+            LEFT JOIN 
+                packages AS p ON p.package_id = r.package_id
+            WHERE
+                p.name IN ($qMarks)
+            ", $packages);
         }
     }
     private function insert($values)
@@ -67,7 +88,7 @@ class Component extends App\Model
     }
     public function install($package)
     {
-        if(App\Kernel::packageExists($package)){
+        if (App\Kernel::packageExists($package)) {
             $this->insert([
                 'name' => $package
             ]);
