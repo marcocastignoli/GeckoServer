@@ -124,7 +124,7 @@ class Kernel
     public static function includePackageFile($package, $file, $alsoIfNotInitialized = false)
     {
         $path = 'Packages/' . $package . '/' . $file . '.php';
-        if ( (in_array($package, self::getPackages()) || $alsoIfNotInitialized) && file_exists($path)) {
+        if ((in_array($package, self::getPackages()) || $alsoIfNotInitialized) && file_exists($path)) {
             require_once $path;
             return $path;
         }
@@ -153,8 +153,8 @@ class Kernel
             $class = $package . '\\' . self::PACKAGE_ROUTES;
             if (method_exists($class, $group)) {
                 $routesGroup = $class::$group($middleware);
-                if(is_array($routesGroup)){
-                    foreach($routesGroup as $route){
+                if (is_array($routesGroup)) {
+                    foreach ($routesGroup as $route) {
                         self::addRoute($route[self::ROUTES_METHOD], $route[self::ROUTES_ROUTE], $route[self::ROUTES_CONTROLLER], $route[self::ROUTES_ACTION], @$route[self::ROUTES_MIDDLEWARE]);
                     }
                 }
