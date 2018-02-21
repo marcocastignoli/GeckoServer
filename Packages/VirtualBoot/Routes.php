@@ -9,9 +9,9 @@ class Routes
         $middleware = $middleware ? $middleware : 'Authentication';
         return [
             ['GET', 'package/install', 'VirtualBoot', 'install', $middleware],
-            ['GET', 'package/uninstall', 'VirtualBoot', $middleware],
-            ['GET', 'package/activate', 'VirtualBoot', $middleware],
-            ['GET', 'package/deactivate', 'VirtualBoot', $middleware],
+            ['GET', 'package/uninstall', 'VirtualBoot', 'uninstall', $middleware],
+            ['GET', 'package/activate', 'VirtualBoot', 'activate', $middleware],
+            ['GET', 'package/deactivate', 'VirtualBoot', 'deactivate', $middleware],
         ];
     }
 }

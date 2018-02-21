@@ -40,6 +40,31 @@ class Component extends App\Model
             ", $packages);
         }
     }
+    public function installRoutes($package){
+        if (App\Kernel::includePackageFile($package, App\Kernel::PACKAGE_ROUTES, true)) {
+            $class = $package . '\\' . App\Kernel::PACKAGE_ROUTES;
+            $group = 'default';
+            if (method_exists($class, $group)) {
+                $routesGroup = $class::$group(false);
+                if(is_array($routesGroup)){
+                    foreach($routesGroup as $route){
+                        if(!isset($route[App\Kernel::ROUTES_MIDDLEWARE])){
+                            $route[App\Kernel::ROUTES_MIDDLEWARE] = null;
+                        }
+                        $this->PDO->query("INSERT INTO routes (package_id, method, route, controller, action, middleware) VALUES ((SELECT package_id FROM packages WHERE name = :package), :method, :route, :controller, :action, :middleware)", [
+                            "package" => $package,
+                            "method" => $route[App\Kernel::ROUTES_METHOD],
+                            "route" => $route[App\Kernel::ROUTES_ROUTE],
+                            "controller" => $route[App\Kernel::ROUTES_CONTROLLER],
+                            "action" => $route[App\Kernel::ROUTES_ACTION],
+                            "middleware" => $route[App\Kernel::ROUTES_MIDDLEWARE],
+                        ]);
+                    }
+                    return true;
+                }
+            }
+        }
+    }
     private function insert($values)
     {
         return $this->PDO->query("INSERT INTO packages (name) VALUES (:name)", $values);
@@ -77,14 +102,13 @@ class Component extends App\Model
     }
     public function callGeckoAction($package, $action)
     {
-        if (App\Kernel::includePackageFile($package, self::PACKAGE_GECKO)) {
+        if (App\Kernel::includePackageFile($package, self::PACKAGE_GECKO, true)) {
             $class = $package . '\\' . self::PACKAGE_GECKO;
             if (method_exists($class, $action)) {
                 $class::$action();
             }
             return true;
         }
-        throw new \Exception("Package doesn't exists");
     }
     public function install($package)
     {
@@ -92,6 +116,7 @@ class Component extends App\Model
             $this->insert([
                 'name' => $package
             ]);
+            $this->installRoutes($package);
             $this->callGeckoAction($package, 'install');
         }
     }

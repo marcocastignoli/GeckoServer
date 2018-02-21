@@ -121,10 +121,10 @@ class Kernel
         return is_dir($path);
     }
 
-    public static function includePackageFile($package, $file)
+    public static function includePackageFile($package, $file, $alsoIfNotInitialized = false)
     {
         $path = 'Packages/' . $package . '/' . $file . '.php';
-        if (in_array($package, self::getPackages()) && file_exists($path)) {
+        if ( (in_array($package, self::getPackages()) || $alsoIfNotInitialized) && file_exists($path)) {
             require_once $path;
             return $path;
         }
