@@ -1,6 +1,17 @@
 <?php
 
-App\Kernel::addRoute('GET', 'package/install', 'VirtualBoot', 'install');
-App\Kernel::addRoute('GET', 'package/uninstall', 'VirtualBoot', 'uninstall');
-App\Kernel::addRoute('GET', 'package/activate', 'VirtualBoot', 'activate');
-App\Kernel::addRoute('GET', 'package/deactivate', 'VirtualBoot', 'deactivate');
+namespace VirtualBoot;
+
+class Routes
+{
+    public static function default($middleware)
+    {   
+        $middleware = $middleware ? $middleware : 'Authentication';
+        return [
+            ['GET', 'package/install', 'VirtualBoot', 'install', $middleware],
+            ['GET', 'package/uninstall', 'VirtualBoot', $middleware],
+            ['GET', 'package/activate', 'VirtualBoot', $middleware],
+            ['GET', 'package/deactivate', 'VirtualBoot', $middleware],
+        ];
+    }
+}
