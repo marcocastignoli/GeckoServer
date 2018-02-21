@@ -86,6 +86,7 @@ class Kernel
                 }
                 $instance->$componentType->__addComponent($componentName, static::$componentsInstances[$componentClass]);
             }
+            $instance->$componentType->__loadPriority(array_keys(self::$components[$componentType]));
         }
         return true;
     }

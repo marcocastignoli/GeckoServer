@@ -23,6 +23,11 @@ class ComponentInterface
         return $component;
     }
 
+    public function __loadPriority($orderArray)
+    {
+        $this->components = array_replace(array_flip($orderArray), $this->components);
+    }
+
     public function __call($methodName, $arguments)
     {
         $component = $this->__use();
