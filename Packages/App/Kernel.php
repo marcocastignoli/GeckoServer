@@ -23,6 +23,7 @@ class Kernel
     private static $packages = [];
     private static $configuration = [];
     private static $routes;
+    private static $componentsPriority = [];
 
     function __construct()
     {
@@ -72,6 +73,11 @@ class Kernel
         }
     }
 
+    public static function setPriority($componentType, $order)
+    {
+        self::$componentsPriority[$componentType] = $order;
+    }
+
     public static function implementComponents(&$instance, $componentType)
     {
         if (array_key_exists($componentType, self::$components)) {
@@ -86,7 +92,13 @@ class Kernel
                 }
                 $instance->$componentType->__addComponent($componentName, static::$componentsInstances[$componentClass]);
             }
-            $instance->$componentType->__loadPriority(array_keys(self::$components[$componentType]));
+            $priorityOrder = null;
+            if(array_key_exists($componentType, self::$componentsPriority)){
+                $priorityOrder = self::$componentsPriority[$componentType];
+            } else {
+                $priorityOrder = array_keys(self::$components[$componentType]);
+            }
+            $instance->$componentType->__loadPriority($priorityOrder);
         }
         return true;
     }
