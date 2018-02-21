@@ -1,6 +1,6 @@
 <?php
 
-namespace Authentication;
+namespace Agent;
 
 class Gecko
 {
