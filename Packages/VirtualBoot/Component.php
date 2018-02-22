@@ -15,13 +15,36 @@ class Component extends App\Model
         $packages = $this->getActivePackages();
         App\Kernel::initPackages($packages);
         App\Kernel::initComponents();
+        $this->loadPriorities();
         $routes = $this->getRoutes($packages);
-        if($routes){
+        if ($routes) {
             foreach ($routes as $route) {
                 App\Kernel::addRoute($route['method'], $route['route'], $route['controller'], $route['action'], $route['middleware']);
             }
         }
     }
+
+    public function loadPriorities()
+    {
+        $priorities = $this->Database->query("
+            SELECT 
+                component_type,
+                component_name,
+                priority
+            FROM 
+                priorities
+            ORDER BY
+                priority ASC
+        ");
+        $arr = array();
+        foreach ($priorities as $item) {
+            $arr[$item['component_type']][$item['priority']] = $item['component_name'];
+        }
+        foreach ($arr as $componentType => $priorityOrder) {
+            App\Kernel::setPriority($componentType, $priorityOrder);
+        }
+    }
+
     public function getRoutes($packages)
     {
         if (is_array($packages) && count($packages) > 0) {
@@ -42,15 +65,16 @@ class Component extends App\Model
             ", $packages);
         }
     }
-    public function installRoutes($package){
+    public function installRoutes($package)
+    {
         if (App\Kernel::includePackageFile($package, App\Kernel::PACKAGE_ROUTES, true)) {
             $class = $package . '\\' . App\Kernel::PACKAGE_ROUTES;
             $group = 'default';
             if (method_exists($class, $group)) {
                 $routesGroup = $class::$group(false);
-                if(is_array($routesGroup)){
-                    foreach($routesGroup as $route){
-                        if(!isset($route[App\Kernel::ROUTES_MIDDLEWARE])){
+                if (is_array($routesGroup)) {
+                    foreach ($routesGroup as $route) {
+                        if (!isset($route[App\Kernel::ROUTES_MIDDLEWARE])) {
                             $route[App\Kernel::ROUTES_MIDDLEWARE] = null;
                         }
                         $this->Database->query("INSERT INTO routes (package_id, method, route, controller, action, middleware) VALUES ((SELECT package_id FROM packages WHERE name = :package), :method, :route, :controller, :action, :middleware)", [
