@@ -24,7 +24,48 @@ class Component extends App\Model
         }
     }
 
-    public function loadPriorities()
+    public function scanPriority()
+    {
+        $priorities = [];
+        foreach (App\Kernel::getPackages(true) as $package) {
+            if (App\Kernel::includePackageFile($package, App\Kernel::PACKAGE_COMPONENT)) {
+                $class = $package . '\\' . App\Kernel::PACKAGE_COMPONENT;
+                if (property_exists($class, 'types')) {
+                    $types = $class::$types;
+                    if (is_array($types)) {
+                        foreach ($types as $type) {
+                            $priorities[$type][] = $package;
+                        }
+                    }
+                }
+            }
+        }
+        return $priorities;
+    }
+
+    public function insertPriority($componentType, $componentName, $priority = false)
+    {
+        $priorityQuery = '';
+        $queryParameters = [];
+        if ($priority === false) {
+            $priorityQuery = 'SELECT :component_type, :component_name, MAX(priority)+1 FROM priorities WHERE component_type = :component_type_';
+            $queryParameters = [
+                'component_type' => $componentType,
+                'component_name' => $componentName,
+                'component_type_' => $componentType
+            ];
+        } else {
+            $priorityQuery = 'VALUES (:component_type, :component_name, :priority)';
+            $queryParameters = [
+                'component_type' => $componentType,
+                'component_name' => $componentName,
+                'priority' => $priority
+            ];
+        }
+        return $this->Database->query("INSERT INTO priorities (component_type, component_name, priority) $priorityQuery", $queryParameters);
+    }
+
+    private function loadPriorities()
     {
         $priorities = $this->Database->query("
             SELECT 
