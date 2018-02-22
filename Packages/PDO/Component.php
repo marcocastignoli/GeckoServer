@@ -23,7 +23,7 @@ class Component
         $query->execute($parameters);
         $error = $query->errorInfo();
         if ($error[0] !== "00000") {
-            throw new PDOException($error[2], $error[0]);
+            throw new PDOException($error[2], (int)$error[0]);
         }
         return $query->fetchAll(\PDO::FETCH_ASSOC);
     }
