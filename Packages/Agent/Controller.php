@@ -13,8 +13,11 @@ class Controller extends App\Controller
     }
     function create($request)
     {
-        if (isset($request['name'])) {
-            $agents = $this->Agent->create($request['name']);
+        if ($name = $request->get('name')) {
+            $agents = $this->Agent->create([
+                'name' => $name,
+                'created_at' => date('Y-m-d H:i:s', time())
+            ]);
             $this->Output->reply($agents);
         } else {
             $this->Output->reply('Parametro name mancante', $this->Output->use()::CODE_MISSING_PARAMETER);
