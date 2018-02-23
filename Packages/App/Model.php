@@ -13,15 +13,6 @@ abstract class Model
         $this->properties = $properties;
     }
 
-    function getProperties($property = false)
-    {
-        if ($property && array_key_exists($property, $this->properties)) {
-            return $this->properties[$property];
-        } else if (count($this->properties) > 0) {
-            return $this->properties;
-        }
-    }
-
     public function get()
     {
         $agents = $this->Database->query('SELECT * FROM ' . static::table);
