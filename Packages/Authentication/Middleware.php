@@ -6,7 +6,8 @@ class Middleware
 {
     public static function before(){
         return function($request){
-            return $request->Request->checkToken(@$request->get('token'));
+            $token = $request->header("Authentication");
+            return $request->Request->checkToken($token);
         };
     }
 }
