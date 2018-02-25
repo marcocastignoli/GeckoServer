@@ -78,22 +78,31 @@ class Kernel
         self::$componentsPriority[$componentType] = $order;
     }
 
-    public static function implementComponents(&$instance, $componentType)
+    public static function implementComponents(&$instance, $componentType, $constructor = false)
     {
         if (array_key_exists($componentType, self::$components)) {
             $instance->$componentType = new ComponentInterface();
             foreach (self::$components[$componentType] as $componentName => $componentClass) {
-                if (!key_exists($componentClass, static::$componentsInstances)) {
+                if ($constructor) {
                     try {
-                        static::$componentsInstances[$componentClass] = new $componentClass();
+                        $instance->$componentType->__addComponent($componentName, new $componentClass($constructor));
                     } catch (\Exception $e) {
                         die(500);
                     }
+                } else {
+                    if (!key_exists($componentClass, static::$componentsInstances)) {
+                        try {
+                            static::$componentsInstances[$componentClass] = new $componentClass();
+                        } catch (\Exception $e) {
+                            die(500);
+                        }
+
+                    }
+                    $instance->$componentType->__addComponent($componentName, static::$componentsInstances[$componentClass]);
                 }
-                $instance->$componentType->__addComponent($componentName, static::$componentsInstances[$componentClass]);
             }
             $priorityOrder = null;
-            if(array_key_exists($componentType, self::$componentsPriority)){
+            if (array_key_exists($componentType, self::$componentsPriority)) {
                 $priorityOrder = self::$componentsPriority[$componentType];
             } else {
                 $priorityOrder = array_keys(self::$components[$componentType]);

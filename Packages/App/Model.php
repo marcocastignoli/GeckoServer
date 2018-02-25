@@ -4,13 +4,10 @@ namespace App;
 
 abstract class Model
 {
-    protected $properties;
-
-    function __construct($properties = false)
+    function __construct()
     {
         Kernel::implementComponents($this, 'Model');
         Kernel::implementComponents($this, 'Database');
-        $this->properties = $properties;
     }
 
     public function get()
