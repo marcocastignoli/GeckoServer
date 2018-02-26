@@ -23,4 +23,13 @@ class Controller extends App\Controller
             $this->Output->reply('Parametro name mancante', $this->Output->use()::CODE_MISSING_PARAMETER);
         }
     }
+    function setName($request)
+    {
+        if ( ($newName = $request->get('name')) && ($id = (int)$request->get('id'))) {
+            $agents = $this->Agent->updateName($newName, $id);
+            $this->Output->reply($agents);
+        } else {
+            $this->Output->reply('Parametro name mancante', $this->Output->use()::CODE_MISSING_PARAMETER);
+        }
+    }
 }
