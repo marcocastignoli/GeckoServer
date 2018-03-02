@@ -4,10 +4,16 @@ namespace tbban;
 
 /*
 Relazioni:
-*/
+ */
 class Gecko
 {
-    public static function install(){
+    function __construct()
+    {
+        \App\Kernel::implementComponents($this, 'Database');
+    }
+
+    public function install()
+    {
         $this->Database->query("CREATE TABLE tbban (
             TBBAN_ID int(11) NOT NULL AUTO_INCREMENT,
             CD_ABI varchar(10) NOT NULL,
@@ -24,5 +30,10 @@ class Gecko
             PRIMARY KEY (TBBAN_ID)
         );");
         return true;
+    }
+
+    public function uninstall()
+    {
+        $this->Database->query("DROP TABLE tbban");
     }
 }
