@@ -2,9 +2,6 @@
 
 namespace tbban;
 
-/*
-Relazioni:
- */
 class Gecko
 {
     function __construct()
