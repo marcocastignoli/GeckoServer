@@ -149,9 +149,9 @@ class Component extends App\Model
             return $res[0]['active'] === "1" ? true : false;
         }
     }
-    private function setActive($package, $active)
+    private function setActive($package, $active, $force = false)
     {
-        if ($this->isActive($package) !== $active) {
+        if ($force || $this->isActive($package) !== $active) {
             return $this->Database->query("UPDATE packages SET active = :active WHERE name = (:name)", [
                 'active' => $active,
                 'name' => $package
@@ -172,7 +172,8 @@ class Component extends App\Model
         if (App\Kernel::includePackageFile($package, self::PACKAGE_GECKO, true)) {
             $class = $package . '\\' . self::PACKAGE_GECKO;
             if (method_exists($class, $action)) {
-                $class::$action();
+                $instance = new $class();
+                $instance->$action();
             }
             return true;
         }
@@ -189,20 +190,20 @@ class Component extends App\Model
     }
     public function uninstall($package)
     {
-        $this->deactivate($package);
+        $this->deactivate($package, true);
         $this->delete([
             'name' => $package
         ]);
         $this->callGeckoAction($package, 'uninstall');
     }
-    public function activate($package)
+    public function activate($package, $force = false)
     {
-        $this->setActive($package, true);
+        $this->setActive($package, true, $force);
         $this->callGeckoAction($package, 'activate');
     }
-    public function deactivate($package)
+    public function deactivate($package, $force = false)
     {
-        $this->setActive($package, false);
+        $this->setActive($package, false, $force);
         $this->callGeckoAction($package, 'deactivate');
     }
 }
